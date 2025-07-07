@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Leads from "./pages/Leads";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +49,7 @@ const App = () => (
           {/* Placeholder routes for future modules */}
           <Route path="/leads" element={
             <ProtectedRoute>
-              <div className="p-6"><h1>Leads & CRM - Coming Soon</h1></div>
+              <Leads />
             </ProtectedRoute>
           } />
           <Route path="/inventory" element={
