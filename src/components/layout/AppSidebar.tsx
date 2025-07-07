@@ -77,7 +77,7 @@ export function AppSidebar() {
   const collapsed = state === 'collapsed';
 
   const filteredItems = menuItems.filter(item => 
-    profile?.role && item.roles.includes(profile.role)
+    profile?.roles?.name && item.roles.includes(profile.roles.name as any)
   );
 
   const isActive = (path: string) => {
@@ -106,8 +106,8 @@ export function AppSidebar() {
             {!collapsed && (
               <div>
                 <h2 className="font-semibold text-sidebar-foreground">DealerCore</h2>
-                {profile?.dealership_name && (
-                  <p className="text-xs text-muted-foreground">{profile.dealership_name}</p>
+                {profile?.dealerships?.name && (
+                  <p className="text-xs text-muted-foreground">{profile.dealerships.name}</p>
                 )}
               </div>
             )}

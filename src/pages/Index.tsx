@@ -50,12 +50,13 @@ const Index = () => {
   }
 
   const getRoleDashboardContent = () => {
-    switch (profile.role) {
+    const userRole = profile?.roles?.name;
+    switch (userRole) {
       case 'admin':
         return <AdminDashboard />;
       case 'sales_manager':
       case 'sales_rep':
-        return <SalesDashboard role={profile.role} />;
+        return <SalesDashboard role={userRole} />;
       case 'technician':
         return <TechnicianDashboard />;
       case 'inventory_manager':
@@ -76,11 +77,11 @@ const Index = () => {
               Good morning, {profile.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="text-muted-foreground mt-1">
-              Here's what's happening at {profile.dealership_name} today
+              Here's what's happening at {profile?.dealerships?.name || 'your dealership'} today
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline">{profile.role.replace('_', ' ').toUpperCase()}</Badge>
+            <Badge variant="outline">{profile?.roles?.name?.replace('_', ' ').toUpperCase() || 'USER'}</Badge>
           </div>
         </div>
         

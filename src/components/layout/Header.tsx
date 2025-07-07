@@ -42,7 +42,8 @@ export function Header({ className }: HeaderProps) {
     }
   };
 
-  const getRoleDisplayName = (role: string) => {
+  const getRoleDisplayName = (roleName?: string) => {
+    if (!roleName) return 'User';
     const roleMap: Record<string, string> = {
       'admin': 'Administrator',
       'sales_manager': 'Sales Manager',
@@ -51,10 +52,11 @@ export function Header({ className }: HeaderProps) {
       'inventory_manager': 'Inventory Manager',
       'accountant': 'Accountant'
     };
-    return roleMap[role] || role;
+    return roleMap[roleName] || roleName;
   };
 
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeVariant = (roleName?: string) => {
+    if (!roleName) return 'default';
     const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
       'admin': 'destructive',
       'sales_manager': 'default',
@@ -63,7 +65,7 @@ export function Header({ className }: HeaderProps) {
       'inventory_manager': 'secondary',
       'accountant': 'outline'
     };
-    return variants[role] || 'default';
+    return variants[roleName] || 'default';
   };
 
   return (
@@ -122,16 +124,16 @@ export function Header({ className }: HeaderProps) {
                   <p className="text-sm font-medium leading-none">
                     {profile?.full_name || 'User'}
                   </p>
-                  <Badge variant={getRoleBadgeVariant(profile?.role || '')}>
-                    {getRoleDisplayName(profile?.role || '')}
+                  <Badge variant={getRoleBadgeVariant(profile?.roles?.name)}>
+                    {getRoleDisplayName(profile?.roles?.name)}
                   </Badge>
                 </div>
                 <p className="text-xs leading-none text-muted-foreground">
                   {profile?.email}
                 </p>
-                {profile?.dealership_name && (
+                {profile?.dealerships?.name && (
                   <p className="text-xs leading-none text-muted-foreground">
-                    {profile.dealership_name}
+                    {profile.dealerships.name}
                   </p>
                 )}
               </div>

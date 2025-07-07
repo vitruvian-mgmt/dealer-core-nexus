@@ -9,12 +9,22 @@ export interface UserProfile {
   user_id: string;
   email: string;
   full_name: string | null;
-  role: UserRole;
-  dealership_name: string;
+  dealership_id: string;
+  dealership_name: string; // Keep for compatibility
+  role_id: string | null;
   phone: string | null;
   avatar_url: string | null;
   created_at: string;
   updated_at: string;
+  dealerships?: {
+    name: string;
+  };
+  roles?: {
+    name: string;
+    permissions: any; // Use any for JSON compatibility
+  };
+  // Add computed properties for compatibility
+  role?: UserRole;
 }
 
 interface AuthState {
@@ -44,9 +54,18 @@ export const useAuth = () => {
             try {
               const { data: profile } = await supabase
                 .from('profiles')
-                .select('*')
+                .select(`
+                  *,
+                  dealerships (name),
+                  roles (name, permissions)
+                `)
                 .eq('user_id', session.user.id)
                 .single();
+              // Add computed properties for compatibility
+              if (profile) {
+                profile.role = profile.roles?.name as UserRole;
+                profile.dealership_name = profile.dealerships?.name || '';
+              }
               
               setState(prev => ({ ...prev, profile, loading: false }));
             } catch (error) {
@@ -94,15 +113,61 @@ export const useAuth = () => {
   }) => {
     if (!state.user) return { error: new Error('No user found') };
 
-    const { error } = await supabase
-      .from('profiles')
-      .insert({
-        user_id: state.user.id,
-        email: state.user.email!,
-        ...profileData,
-      });
+    try {
+      // First, create or get dealership
+      let dealership_id: string;
+      
+      const { data: existingDealership } = await supabase
+        .from('dealerships')
+        .select('id')
+        .eq('name', profileData.dealership_name)
+        .single();
 
-    return { error };
+      if (existingDealership) {
+        dealership_id = existingDealership.id;
+      } else {
+        const { data: newDealership, error: dealershipError } = await supabase
+          .from('dealerships')
+          .insert({ name: profileData.dealership_name })
+          .select('id')
+          .single();
+
+        if (dealershipError || !newDealership) {
+          return { error: new Error('Failed to create dealership') };
+        }
+
+        dealership_id = newDealership.id;
+      }
+
+      // Get the role_id for the specified role
+      const { data: role } = await supabase
+        .from('roles')
+        .select('id')
+        .eq('dealership_id', dealership_id)
+        .eq('name', profileData.role)
+        .single();
+
+      if (!role) {
+        return { error: new Error('Role not found') };
+      }
+
+      // Create profile with minimal fields (dealership_name will be populated by trigger)
+      const { error } = await supabase
+        .from('profiles')
+        .insert({
+          user_id: state.user.id,
+          email: state.user.email!,
+          full_name: profileData.full_name,
+          dealership_id: dealership_id,
+          role_id: role.id,
+          phone: profileData.phone || null,
+          dealership_name: profileData.dealership_name, // Keep for compatibility
+        });
+
+      return { error };
+    } catch (error) {
+      return { error: error instanceof Error ? error : new Error('Unknown error') };
+    }
   };
 
   return {

@@ -926,6 +926,10 @@ export type Database = {
         Args: { dealership_uuid: string }
         Returns: undefined
       }
+      user_has_permission: {
+        Args: { permission_name: string }
+        Returns: boolean
+      }
     }
     Enums: {
       user_role:
