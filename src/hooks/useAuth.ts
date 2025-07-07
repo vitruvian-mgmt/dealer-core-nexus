@@ -1,38 +1,14 @@
 import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-
-export type UserRole = 'admin' | 'sales_manager' | 'sales_rep' | 'technician' | 'inventory_manager' | 'accountant';
-
-export interface UserProfile {
-  id: string;
-  user_id: string;
-  email: string;
-  full_name: string | null;
-  dealership_id: string;
-  dealership_name: string; // Keep for compatibility
-  role_id: string | null;
-  phone: string | null;
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
-  dealerships?: {
-    name: string;
-  };
-  roles?: {
-    name: string;
-    permissions: any; // Use any for JSON compatibility
-  };
-  // Add computed properties for compatibility
-  role?: UserRole;
-}
-
-interface AuthState {
-  user: User | null;
-  session: Session | null;
-  profile: UserProfile | null;
-  loading: boolean;
-}
+import { AuthState, UserProfile, UserRole, CreateProfileData } from '@/types/auth';
+import { 
+  signInWithEmail, 
+  signUpWithEmail, 
+  signInWithGoogle, 
+  signInWithApple, 
+  signOut 
+} from '@/services/authService';
+import { createProfile } from '@/services/profileService';
 
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
@@ -87,136 +63,8 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInWithEmail = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    return { error };
-  };
-
-  const signUpWithEmail = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl
-      }
-    });
-    
-    return { error };
-  };
-
-  const signInWithGoogle = async () => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl
-      }
-    });
-    
-    return { error };
-  };
-
-  const signInWithApple = async () => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'apple',
-      options: {
-        redirectTo: redirectUrl
-      }
-    });
-    
-    return { error };
-  };
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
-  };
-
-  const createProfile = async (profileData: {
-    full_name: string;
-    role: UserRole;
-    dealership_name: string;
-    phone?: string;
-  }) => {
-    if (!state.user) return { error: new Error('No user found') };
-
-    try {
-      // First, create or get dealership
-      let dealership_id: string;
-      
-      const { data: existingDealership } = await supabase
-        .from('dealerships')
-        .select('id')
-        .eq('name', profileData.dealership_name)
-        .single();
-
-      if (existingDealership) {
-        dealership_id = existingDealership.id;
-      } else {
-        const { data: newDealership, error: dealershipError } = await supabase
-          .from('dealerships')
-          .insert({ 
-            name: profileData.dealership_name,
-            owner_id: state.user.id
-          })
-          .select('id')
-          .single();
-
-        if (dealershipError || !newDealership) {
-          return { error: new Error('Failed to create dealership') };
-        }
-
-        dealership_id = newDealership.id;
-
-        // Create default roles for the new dealership
-        const { error: rolesError } = await supabase.rpc('create_default_roles', {
-          dealership_uuid: dealership_id
-        });
-
-        if (rolesError) {
-          console.error('Failed to create default roles:', rolesError);
-          return { error: new Error('Failed to create default roles') };
-        }
-      }
-
-      // Get the role_id for the specified role
-      const { data: role } = await supabase
-        .from('roles')
-        .select('id')
-        .eq('dealership_id', dealership_id)
-        .eq('name', profileData.role)
-        .single();
-
-      if (!role) {
-        return { error: new Error('Role not found') };
-      }
-
-      // Create profile with minimal fields (dealership_name will be populated by trigger)
-      const { error } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: state.user.id,
-          email: state.user.email!,
-          full_name: profileData.full_name,
-          dealership_id: dealership_id,
-          role_id: role.id,
-          phone: profileData.phone || null,
-          dealership_name: profileData.dealership_name, // Keep for compatibility
-        });
-
-      return { error };
-    } catch (error) {
-      return { error: error instanceof Error ? error : new Error('Unknown error') };
-    }
+  const handleCreateProfile = async (profileData: CreateProfileData) => {
+    return createProfile(state.user, profileData);
   };
 
   return {
@@ -226,6 +74,8 @@ export const useAuth = () => {
     signInWithGoogle,
     signInWithApple,
     signOut,
-    createProfile,
+    createProfile: handleCreateProfile,
   };
 };
+
+export type { UserRole, UserProfile, CreateProfileData };
