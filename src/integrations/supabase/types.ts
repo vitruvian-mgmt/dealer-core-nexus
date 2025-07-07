@@ -925,6 +925,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_assign_role: {
+        Args: { target_role_id: string }
+        Returns: boolean
+      }
       create_default_roles: {
         Args: { dealership_uuid: string }
         Returns: undefined
