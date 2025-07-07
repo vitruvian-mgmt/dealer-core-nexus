@@ -31,12 +31,10 @@ export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && profile) {
+    if (user) {
       navigate('/');
-    } else if (user && !profile) {
-      setNeedsProfile(true);
     }
-  }, [user, profile, navigate]);
+  }, [user, navigate]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
