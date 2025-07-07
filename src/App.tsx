@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Leads from "./pages/Leads";
 import Inventory from "./pages/Inventory";
+import Service from "./pages/Service";
 
 const queryClient = new QueryClient();
 
@@ -60,7 +61,7 @@ const App = () => (
           } />
           <Route path="/service" element={
             <ProtectedRoute>
-              <div className="p-6"><h1>Service Management - Coming Soon</h1></div>
+              <Service />
             </ProtectedRoute>
           } />
           <Route path="/reports" element={
