@@ -11,6 +11,7 @@ import Leads from "./pages/Leads";
 import Inventory from "./pages/Inventory";
 import Service from "./pages/Service";
 import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -77,7 +78,7 @@ const App = () => (
           } />
           <Route path="/settings" element={
             <ProtectedRoute>
-              <div className="p-6"><h1>Settings - Coming Soon</h1></div>
+              <Settings />
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFound />} />
