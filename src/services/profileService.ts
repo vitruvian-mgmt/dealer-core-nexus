@@ -43,16 +43,30 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
       }
     }
 
+    // Debug: Log all available roles for this dealership
+    const { data: allRoles, error: rolesQueryError } = await supabase
+      .from('roles')
+      .select('id, name')
+      .eq('dealership_id', dealership_id);
+
+    console.log('Available roles for dealership:', allRoles);
+    console.log('Roles query error:', rolesQueryError);
+    console.log('Looking for role:', profileData.role);
+
     // Get the role_id for the specified role
-    const { data: role } = await supabase
+    const { data: role, error: roleError } = await supabase
       .from('roles')
       .select('id')
       .eq('dealership_id', dealership_id)
       .eq('name', profileData.role)
       .single();
 
+    console.log('Role query result:', role);
+    console.log('Role query error:', roleError);
+
     if (!role) {
-      return { error: new Error('Role not found') };
+      console.error('Role not found. Available roles:', allRoles?.map(r => r.name));
+      return { error: new Error(`Role '${profileData.role}' not found. Available roles: ${allRoles?.map(r => r.name).join(', ')}`) };
     }
 
     // Create profile with minimal fields (dealership_name will be populated by trigger)
