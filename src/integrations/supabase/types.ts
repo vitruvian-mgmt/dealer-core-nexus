@@ -62,6 +62,13 @@ export type Database = {
             foreignKeyName: "audit_logs_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "audit_logs_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -117,6 +124,13 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_customers_dealership"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "fk_customers_dealership"
             columns: ["dealership_id"]
@@ -259,6 +273,13 @@ export type Database = {
             foreignKeyName: "invoices_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "invoices_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -329,6 +350,13 @@ export type Database = {
             foreignKeyName: "fk_leads_dealership"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "fk_leads_dealership"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -388,6 +416,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "notifications_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "notifications_dealership_id_fkey"
             columns: ["dealership_id"]
@@ -460,6 +495,13 @@ export type Database = {
             foreignKeyName: "parts_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "parts_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -509,6 +551,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "payments_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "payments_dealership_id_fkey"
             columns: ["dealership_id"]
@@ -569,6 +618,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_profiles_dealership"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "fk_profiles_dealership"
             columns: ["dealership_id"]
@@ -645,6 +701,13 @@ export type Database = {
             foreignKeyName: "reports_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "reports_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -676,6 +739,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "roles_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "roles_dealership_id_fkey"
             columns: ["dealership_id"]
@@ -786,6 +856,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_jobs_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
           },
           {
             foreignKeyName: "service_jobs_dealership_id_fkey"
@@ -905,6 +982,13 @@ export type Database = {
             foreignKeyName: "vehicles_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "vehicles_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -919,12 +1003,71 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      dashboard_stats: {
+        Row: {
+          active_service_jobs: number | null
+          available_vehicles: number | null
+          dealership_id: string | null
+          dealership_name: string | null
+          low_stock_parts: number | null
+          new_leads: number | null
+          total_customers: number | null
+          total_revenue: number | null
+          total_sales: number | null
+        }
+        Insert: {
+          active_service_jobs?: never
+          available_vehicles?: never
+          dealership_id?: string | null
+          dealership_name?: string | null
+          low_stock_parts?: never
+          new_leads?: never
+          total_customers?: never
+          total_revenue?: never
+          total_sales?: never
+        }
+        Update: {
+          active_service_jobs?: never
+          available_vehicles?: never
+          dealership_id?: string | null
+          dealership_name?: string | null
+          low_stock_parts?: never
+          new_leads?: never
+          total_customers?: never
+          total_revenue?: never
+          total_sales?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_default_roles: {
         Args: { dealership_uuid: string }
         Returns: undefined
+      }
+      create_notification: {
+        Args: {
+          dealership_uuid: string
+          user_uuid: string
+          title_text: string
+          message_text: string
+          notification_type?: string
+          reference_type_text?: string
+          reference_uuid?: string
+        }
+        Returns: string
+      }
+      generate_invoice_number: {
+        Args: { dealership_uuid: string }
+        Returns: string
+      }
+      generate_job_number: {
+        Args: { dealership_uuid: string }
+        Returns: string
+      }
+      generate_payment_number: {
+        Args: { dealership_uuid: string }
+        Returns: string
       }
       user_has_permission: {
         Args: { permission_name: string }

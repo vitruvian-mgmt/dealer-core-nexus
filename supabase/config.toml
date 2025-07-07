@@ -1,1 +1,16 @@
 project_id = "jdesujumjrfjexpkfzud"
+
+[auth]
+external_google_enabled = true
+
+[functions.decode-vin]
+verify_jwt = true
+
+[functions.import-csv] 
+verify_jwt = true
+
+[functions.generate-report]
+verify_jwt = true
+
+[functions.send-notification]
+verify_jwt = true
