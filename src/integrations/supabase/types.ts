@@ -19,6 +19,7 @@ export type Database = {
           address: string | null
           city: string | null
           created_at: string
+          dealership_id: string
           dealership_name: string
           email: string | null
           first_name: string
@@ -34,6 +35,7 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          dealership_id: string
           dealership_name: string
           email?: string | null
           first_name: string
@@ -49,6 +51,7 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          dealership_id?: string
           dealership_name?: string
           email?: string | null
           first_name?: string
@@ -60,6 +63,62 @@ export type Database = {
           updated_at?: string
           zip_code?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "fk_customers_dealership"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealerships: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          id: string
+          license_number: string | null
+          name: string
+          phone: string | null
+          settings: Json | null
+          state: string | null
+          updated_at: string
+          website: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          license_number?: string | null
+          name: string
+          phone?: string | null
+          settings?: Json | null
+          state?: string | null
+          updated_at?: string
+          website?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          license_number?: string | null
+          name?: string
+          phone?: string | null
+          settings?: Json | null
+          state?: string | null
+          updated_at?: string
+          website?: string | null
+          zip_code?: string | null
+        }
         Relationships: []
       }
       leads: {
@@ -67,6 +126,7 @@ export type Database = {
           assigned_to: string | null
           created_at: string
           customer_id: string | null
+          dealership_id: string
           dealership_name: string
           estimated_value: number | null
           id: string
@@ -81,6 +141,7 @@ export type Database = {
           assigned_to?: string | null
           created_at?: string
           customer_id?: string | null
+          dealership_id: string
           dealership_name: string
           estimated_value?: number | null
           id?: string
@@ -95,6 +156,7 @@ export type Database = {
           assigned_to?: string | null
           created_at?: string
           customer_id?: string | null
+          dealership_id?: string
           dealership_name?: string
           estimated_value?: number | null
           id?: string
@@ -106,6 +168,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_leads_dealership"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dealerships"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "leads_customer_id_fkey"
             columns: ["customer_id"]
@@ -119,47 +188,106 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          dealership_id: string
           dealership_name: string
           email: string
           full_name: string | null
           id: string
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
+          role_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          dealership_id: string
           dealership_name: string
           email: string
           full_name?: string | null
           id?: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          role_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          dealership_id?: string
           dealership_name?: string
           email?: string
           full_name?: string | null
           id?: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          role_id?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_profiles_dealership"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dealerships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_profiles_role"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          dealership_id: string
+          id: string
+          name: string
+          permissions: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dealership_id: string
+          id?: string
+          name: string
+          permissions?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dealership_id?: string
+          id?: string
+          name?: string
+          permissions?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roles_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_default_roles: {
+        Args: { dealership_uuid: string }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role:
