@@ -35,10 +35,6 @@ export default function Auth() {
       navigate('/');
     } else if (user && !profile) {
       setNeedsProfile(true);
-      // Pre-fill dealership name for tdebique@gmail.com
-      if (user?.email === 'tdebique@gmail.com') {
-        setProfileData(prev => ({ ...prev, dealership_name: 'Trucks and Boats' }));
-      }
     }
   }, [user, profile, navigate]);
 
@@ -168,11 +164,7 @@ export default function Auth() {
                   onChange={(e) => setProfileData({ ...profileData, dealership_name: e.target.value })}
                   placeholder="Enter your dealership name"
                   required
-                  disabled={user?.email === 'tdebique@gmail.com'}
                 />
-                {user?.email === 'tdebique@gmail.com' && (
-                  <p className="text-sm text-muted-foreground">Your dealership "Trucks and Boats" has been pre-selected.</p>
-                )}
               </div>
 
               <div className="space-y-2">
@@ -206,25 +198,14 @@ export default function Auth() {
                 />
               </div>
 
-              <div className="flex gap-2">
-                <Button 
-                  type="submit" 
-                  className="flex-1 btn-premium" 
-                  disabled={isLoading}
-                >
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Complete Setup
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  className="px-4"
-                  onClick={() => navigate('/')}
-                  disabled={isLoading}
-                >
-                  Skip
-                </Button>
-              </div>
+              <Button 
+                type="submit" 
+                className="w-full btn-premium" 
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Complete Setup
+              </Button>
             </form>
           </CardContent>
         </Card>

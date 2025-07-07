@@ -27,6 +27,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return <Navigate to="/auth" replace />;
+  if (!profile) return <Navigate to="/auth" replace />;
   
   return <>{children}</>;
 }

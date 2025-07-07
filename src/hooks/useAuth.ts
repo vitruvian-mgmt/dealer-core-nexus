@@ -150,19 +150,13 @@ export const useAuth = () => {
     if (!state.user) return { error: new Error('No user found') };
 
     try {
-      // Special handling for tdebique@gmail.com - auto-associate with "Trucks and Boats"
-      let finalDealershipName = profileData.dealership_name;
-      if (state.user.email === 'tdebique@gmail.com') {
-        finalDealershipName = 'Trucks and Boats';
-      }
-
       // First, create or get dealership
       let dealership_id: string;
       
       const { data: existingDealership } = await supabase
         .from('dealerships')
         .select('id')
-        .eq('name', finalDealershipName)
+        .eq('name', profileData.dealership_name)
         .single();
 
       if (existingDealership) {
@@ -170,7 +164,7 @@ export const useAuth = () => {
       } else {
         const { data: newDealership, error: dealershipError } = await supabase
           .from('dealerships')
-          .insert({ name: finalDealershipName })
+          .insert({ name: profileData.dealership_name })
           .select('id')
           .single();
 
@@ -203,7 +197,7 @@ export const useAuth = () => {
           dealership_id: dealership_id,
           role_id: role.id,
           phone: profileData.phone || null,
-          dealership_name: finalDealershipName, // Keep for compatibility
+          dealership_name: profileData.dealership_name, // Keep for compatibility
         });
 
       return { error };
