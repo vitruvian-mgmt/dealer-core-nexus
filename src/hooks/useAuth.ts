@@ -164,7 +164,10 @@ export const useAuth = () => {
       } else {
         const { data: newDealership, error: dealershipError } = await supabase
           .from('dealerships')
-          .insert({ name: profileData.dealership_name })
+          .insert({ 
+            name: profileData.dealership_name,
+            owner_id: state.user.id
+          })
           .select('id')
           .single();
 

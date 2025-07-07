@@ -135,6 +135,7 @@ export type Database = {
           id: string
           license_number: string | null
           name: string
+          owner_id: string | null
           phone: string | null
           settings: Json | null
           state: string | null
@@ -150,6 +151,7 @@ export type Database = {
           id?: string
           license_number?: string | null
           name: string
+          owner_id?: string | null
           phone?: string | null
           settings?: Json | null
           state?: string | null
@@ -165,6 +167,7 @@ export type Database = {
           id?: string
           license_number?: string | null
           name?: string
+          owner_id?: string | null
           phone?: string | null
           settings?: Json | null
           state?: string | null
