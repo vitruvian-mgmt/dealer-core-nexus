@@ -24,7 +24,7 @@ export function InventoryFilters({ filters, onFiltersChange, type }: InventoryFi
   };
 
   const vehicleStatuses = [
-    { value: "", label: "All Statuses" },
+    { value: "all", label: "All Statuses" },
     { value: "available", label: "Available" },
     { value: "sold", label: "Sold" },
     { value: "pending", label: "Pending" },
@@ -32,7 +32,7 @@ export function InventoryFilters({ filters, onFiltersChange, type }: InventoryFi
   ];
 
   const partStatuses = [
-    { value: "", label: "All Statuses" },
+    { value: "all", label: "All Statuses" },
     { value: "in_stock", label: "In Stock" },
     { value: "low_stock", label: "Low Stock" },
     { value: "out_of_stock", label: "Out of Stock" },
@@ -55,7 +55,7 @@ export function InventoryFilters({ filters, onFiltersChange, type }: InventoryFi
             />
           </div>
 
-          <Select value={filters.status} onValueChange={(value) => updateFilter("status", value)}>
+          <Select value={filters.status || "all"} onValueChange={(value) => updateFilter("status", value === "all" ? "" : value)}>
             <SelectTrigger>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -79,6 +79,7 @@ export function InventoryFilters({ filters, onFiltersChange, type }: InventoryFi
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All Prices</SelectItem>
               <SelectItem value="0-10000">$0 - $10,000</SelectItem>
               <SelectItem value="10000-25000">$10,000 - $25,000</SelectItem>
               <SelectItem value="25000-50000">$25,000 - $50,000</SelectItem>
