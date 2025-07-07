@@ -157,7 +157,7 @@ export const useAuth = () => {
         .from('dealerships')
         .select('id')
         .eq('name', profileData.dealership_name)
-        .maybeSingle();
+        .single();
 
       if (existingDealership) {
         dealership_id = existingDealership.id;
@@ -169,19 +169,10 @@ export const useAuth = () => {
           .single();
 
         if (dealershipError || !newDealership) {
-          console.error('Dealership creation error:', dealershipError);
-          return { error: new Error('Failed to create dealership: ' + (dealershipError?.message || 'Unknown error')) };
+          return { error: new Error('Failed to create dealership') };
         }
 
         dealership_id = newDealership.id;
-        
-        // Create default roles for the new dealership
-        try {
-          await supabase.rpc('create_default_roles', { dealership_uuid: dealership_id });
-        } catch (roleError) {
-          console.error('Error creating default roles:', roleError);
-          // Continue anyway - roles might already exist
-        }
       }
 
       // Get the role_id for the specified role
@@ -190,7 +181,7 @@ export const useAuth = () => {
         .select('id')
         .eq('dealership_id', dealership_id)
         .eq('name', profileData.role)
-        .maybeSingle();
+        .single();
 
       if (!role) {
         return { error: new Error('Role not found') };
