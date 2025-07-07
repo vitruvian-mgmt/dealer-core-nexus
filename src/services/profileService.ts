@@ -7,12 +7,13 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
   try {
     // First, create or get dealership
     let dealership_id: string;
+    let isNewDealership = false;
     
     const { data: existingDealership } = await supabase
       .from('dealerships')
       .select('id')
       .eq('name', profileData.dealership_name)
-      .single();
+      .maybeSingle();
 
     if (existingDealership) {
       dealership_id = existingDealership.id;
@@ -27,10 +28,12 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
         .single();
 
       if (dealershipError || !newDealership) {
+        console.error('Failed to create dealership:', dealershipError);
         return { error: new Error('Failed to create dealership') };
       }
 
       dealership_id = newDealership.id;
+      isNewDealership = true;
 
       // Create default roles for the new dealership
       const { error: rolesError } = await supabase.rpc('create_default_roles', {
@@ -41,9 +44,12 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
         console.error('Failed to create default roles:', rolesError);
         return { error: new Error('Failed to create default roles') };
       }
+
+      // Wait a moment for roles to be created
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    // Debug: Log all available roles for this dealership
+    // Verify roles exist before proceeding
     const { data: allRoles, error: rolesQueryError } = await supabase
       .from('roles')
       .select('id, name')
@@ -53,13 +59,18 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
     console.log('Roles query error:', rolesQueryError);
     console.log('Looking for role:', profileData.role);
 
+    if (!allRoles || allRoles.length === 0) {
+      console.error('No roles found for dealership after creation');
+      return { error: new Error('Failed to create or retrieve roles for dealership') };
+    }
+
     // Get the role_id for the specified role
     const { data: role, error: roleError } = await supabase
       .from('roles')
       .select('id')
       .eq('dealership_id', dealership_id)
       .eq('name', profileData.role)
-      .single();
+      .maybeSingle();
 
     console.log('Role query result:', role);
     console.log('Role query error:', roleError);
@@ -69,8 +80,8 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
       return { error: new Error(`Role '${profileData.role}' not found. Available roles: ${allRoles?.map(r => r.name).join(', ')}`) };
     }
 
-    // Create profile with minimal fields (dealership_name will be populated by trigger)
-    const { error } = await supabase
+    // Create profile
+    const { error: profileError } = await supabase
       .from('profiles')
       .insert({
         user_id: user.id,
@@ -79,11 +90,17 @@ export const createProfile = async (user: any, profileData: CreateProfileData) =
         dealership_id: dealership_id,
         role_id: role.id,
         phone: profileData.phone || null,
-        dealership_name: profileData.dealership_name, // Keep for compatibility
+        dealership_name: profileData.dealership_name,
       });
 
-    return { error };
+    if (profileError) {
+      console.error('Failed to create profile:', profileError);
+      return { error: new Error('Failed to create profile') };
+    }
+
+    return { error: null };
   } catch (error) {
+    console.error('Unexpected error in createProfile:', error);
     return { error: error instanceof Error ? error : new Error('Unknown error') };
   }
 };
