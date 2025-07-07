@@ -176,6 +176,16 @@ export const useAuth = () => {
         }
 
         dealership_id = newDealership.id;
+
+        // Create default roles for the new dealership
+        const { error: rolesError } = await supabase.rpc('create_default_roles', {
+          dealership_uuid: dealership_id
+        });
+
+        if (rolesError) {
+          console.error('Failed to create default roles:', rolesError);
+          return { error: new Error('Failed to create default roles') };
+        }
       }
 
       // Get the role_id for the specified role
