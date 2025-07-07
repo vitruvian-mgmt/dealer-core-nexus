@@ -11,6 +11,7 @@ import Leads from "./pages/Leads";
 import Inventory from "./pages/Inventory";
 import Service from "./pages/Service";
 import Reports from "./pages/Reports";
+import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
@@ -73,7 +74,7 @@ const App = () => (
           } />
           <Route path="/users" element={
             <ProtectedRoute>
-              <div className="p-6"><h1>User Management - Coming Soon</h1></div>
+              <Users />
             </ProtectedRoute>
           } />
           <Route path="/settings" element={
